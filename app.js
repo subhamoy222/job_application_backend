@@ -1,45 +1,3 @@
-// import express from "express";
-// import { dbConnection } from "./database/dbConnection.js";
-// import jobRouter from "./routes/jobRoutes.js";
-// import userRouter from "./routes/userRoutes.js";
-// import applicationRouter from "./routes/applicationRoutes.js";
-// import { config } from "dotenv";
-// import cors from "cors";
-// import { errorMiddleware } from "./middlewares/error.js";
-// import cookieParser from "cookie-parser";
-// import fileUpload from "express-fileupload";
-
-// const app = express();
-// config({ path: "./config/config.env" });
-
-// app.options("*", cors({
-//   origin: [process.env.FRONTEND_URL],
-//   methods: ["GET", "POST", "DELETE", "PUT"],
-//   credentials: true,
-// }));
-
-
-// app.use(cookieParser());
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// app.use(
-//   fileUpload({
-//     useTempFiles: true,
-//     tempFileDir: "/tmp/",
-//   })
-// );
-
-
-// app.use("/api/v1/user", userRouter);
-// app.use("/api/v1/job", jobRouter);
-// app.use("/api/v1/application", applicationRouter);
-
-// dbConnection();
-
-// app.use(errorMiddleware);
-// export default app;
-
 import express from "express";
 import { dbConnection } from "./database/dbConnection.js";
 import jobRouter from "./routes/jobRoutes.js";
@@ -96,6 +54,20 @@ app.use(
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/job", jobRouter);
 app.use("/api/v1/application", applicationRouter);
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is running",
+    timestamp: new Date().toISOString(),
+    routes: {
+      user: "/api/v1/user",
+      job: "/api/v1/job", 
+      application: "/api/v1/application"
+    }
+  });
+});
 
 dbConnection();
 
