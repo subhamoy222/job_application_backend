@@ -33,16 +33,27 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   console.log("Token from cookies:", token); // Debug line
   
   if (!token) {
+    console.log("No token found in cookies");
     return next(new ErrorHandler("User Not Authorized", 401));
   }
   
-  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  console.log("Decoded token:", decoded); // Debug line
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log("Decoded token:", decoded); // Debug line
 
-  req.user = await User.findById(decoded.id);
-  console.log("User found:", req.user?.email); // Debug line
+    req.user = await User.findById(decoded.id);
+    console.log("User found:", req.user?.email); // Debug line
+    
+    if (!req.user) {
+      console.log("User not found in database");
+      return next(new ErrorHandler("User Not Found", 401));
+    }
 
-  next();
+    next();
+  } catch (error) {
+    console.error("Token verification failed:", error.message);
+    return next(new ErrorHandler("Invalid Token", 401));
+  }
 });
 
 

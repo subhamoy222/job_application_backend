@@ -83,23 +83,35 @@ export const register = catchAsyncErrors(async (req, res, next) => {
 // Login User
 export const login = catchAsyncErrors(async (req, res, next) => {
   const { email, password, role } = req.body;
+  console.log("Login attempt:", { email, role }); // Debug log
+  
   if (!email || !password || !role) {
     return next(new ErrorHandler("Please provide email, password, and role."));
   }
+  
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
+    console.log("User not found:", email); // Debug log
     return next(new ErrorHandler("Invalid Email Or Password.", 400));
   }
+  
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
+    console.log("Password mismatch for:", email); // Debug log
     return next(new ErrorHandler("Invalid Email Or Password.", 400));
   }
+  
   if (user.role !== role) {
+    console.log("Role mismatch:", { userRole: user.role, requestedRole: role }); // Debug log
     return next(new ErrorHandler(`User with provided email and ${role} not found!`, 404));
   }
+  
   if (!user.isVerified) {
+    console.log("User not verified:", email); // Debug log
     return next(new ErrorHandler("Please verify your email to log in.", 401));
   }
+  
+  console.log("Login successful for:", email); // Debug log
   sendToken(user, 201, res, "User Logged In!");
 });
 
