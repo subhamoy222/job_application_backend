@@ -56,7 +56,13 @@ config({ path: "./config/config.env" });
 
 // CORS configuration - Apply to all routes
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, "https://job-application-frontend-liard.vercel.app"],
+  origin: [
+    process.env.FRONTEND_URL, 
+    "https://job-application-frontend-liard.vercel.app",
+    process.env.LOCALHOST_URL,
+    "http://localhost:5173",
+    "http://localhost:3000"
+  ],
   methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -64,7 +70,13 @@ app.use(cors({
 
 // Handle preflight requests explicitly
 app.options("*", cors({
-  origin: [process.env.FRONTEND_URL, "https://job-application-frontend-liard.vercel.app"],
+  origin: [
+    process.env.FRONTEND_URL, 
+    "https://job-application-frontend-liard.vercel.app",
+    process.env.LOCALHOST_URL,
+    "http://localhost:5173",
+    "http://localhost:3000"
+  ],
   methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],

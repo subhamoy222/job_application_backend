@@ -64,10 +64,19 @@ export const register = catchAsyncErrors(async (req, res, next) => {
       message: "Registration successful! Please check your email for verification.",
     });
   } catch (error) {
+    console.error("Email sending failed:", error);
     user.verificationToken = undefined;
     user.verificationTokenExpire = undefined;
     await user.save({ validateBeforeSave: false });
-    return next(new ErrorHandler("Email could not be sent.", 500));
+    
+    // Provide more specific error message
+    if (error.code === 'EAUTH') {
+      return next(new ErrorHandler("Email authentication failed. Please try again later.", 500));
+    } else if (error.code === 'ECONNECTION') {
+      return next(new ErrorHandler("Email service temporarily unavailable. Please try again later.", 500));
+    } else {
+      return next(new ErrorHandler("Email could not be sent. Please try again later.", 500));
+    }
   }
 });
 

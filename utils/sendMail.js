@@ -39,11 +39,17 @@ const transporter = nodemailer.createTransport({
     user: "subhamsasmal396@gmail.com",
     pass: 'lvlttixuqnqgqcth',
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 // Async function to send email
 export async function sendMail(to, subject, text, html) {
   try {
+    // Verify transporter configuration
+    await transporter.verify();
+    
     // Send mail with defined transport object
     const info = await transporter.sendMail({
       from: 'subhamsasmal396@gmail.com', // Sender address
